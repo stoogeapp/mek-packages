@@ -37,8 +37,10 @@ extension CardBrand {
             return .interac
         case .eftposAu:
             return .eftposAu
+        case .cartesBancaires, .girocard:
+            return nil
         @unknown default:
-            fatalError("WTF")
+            return nil
         }
     }
 }

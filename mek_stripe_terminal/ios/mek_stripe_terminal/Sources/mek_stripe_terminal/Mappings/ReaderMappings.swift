@@ -80,7 +80,7 @@ extension ReaderNetworkStatus {
 }
 
 extension DeviceType {
-    func toApi() -> DeviceTypeApi {
+    func toApi() -> DeviceTypeApi? {
         switch self {
         case .chipper1X:
             return .chipper1X
@@ -142,8 +142,10 @@ extension DeviceType {
             return .stripeT610
         case .stripeT610DevKit:
             return .stripeT610Devkit
+        case .unknown:
+            return nil
         @unknown default:
-            fatalError("DeviceType->DeviceTypeApi \(self) not supported.")
+            return nil
         }
     }
 }

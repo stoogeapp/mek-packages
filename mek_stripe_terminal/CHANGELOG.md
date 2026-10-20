@@ -1,8 +1,4 @@
 
-## 5.7.3
-- fix(ios): execute fetchConnectionToken on main thread
-- feat(ios): added experimental `ProximityReader` api, with `isAccountLinked`, `linkAccount` and `presentHowToTap` methods
-
 ## 5.7.2
 - fix(ios): added support to more device types
 - fix(ios): fix `Terminal.discoveryReaders` method doesn't work the second time

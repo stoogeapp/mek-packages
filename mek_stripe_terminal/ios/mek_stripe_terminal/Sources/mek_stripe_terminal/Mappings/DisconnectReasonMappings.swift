@@ -24,8 +24,10 @@ extension DisconnectReason {
             return .usbDisconnected
         case .bluetoothSignalLost:
             return .bluetoothSignalLost
+        case .peerRemovedPairingInformation:
+            return .unknown
         @unknown default:
-            fatalError("WTF")
+            return .unknown
         }
     }
 }

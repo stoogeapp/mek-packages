@@ -1,1 +1,0 @@
-class NotFoundLocationException implements Exception {}

@@ -24,8 +24,8 @@ fun CardDetails.toApi(): CardDetailsApi {
     return CardDetailsApi(
         brand = cardBrandToApi(brand),
         country = country,
-        expMonth = expMonth.toLong(),
-        expYear = expYear.toLong(),
+        expMonth = expMonth?.toLong() ?: 0L,
+        expYear = expYear?.toLong() ?: 0L,
         funding = fundingToApi(funding),
         last4 = last4
     )
@@ -61,8 +61,8 @@ fun CardPresentDetails.toApi(): CardPresentDetailsApi {
     return CardPresentDetailsApi(
         brand = cardBrandToApi(brand),
         country = country,
-        expMonth = expMonth.toLong(),
-        expYear = expYear.toLong(),
+        expMonth = expMonth?.toLong() ?: 0L,
+        expYear = expYear?.toLong() ?: 0L,
         funding = fundingToApi(funding),
         last4 = last4,
         cardholderName = cardholderName,
@@ -70,7 +70,7 @@ fun CardPresentDetails.toApi(): CardPresentDetailsApi {
         receipt = receiptDetails?.toApi(),
         emvAuthData = emvAuthData,
         networks = networks?.toApi(),
-        incrementalAuthorizationStatus = incrementalAuthorizationStatus.toApi()
+        incrementalAuthorizationStatus = incrementalAuthorizationStatus?.toApi()
     )
 }
 

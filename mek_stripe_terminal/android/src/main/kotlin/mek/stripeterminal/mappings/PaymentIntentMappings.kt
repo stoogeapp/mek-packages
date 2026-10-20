@@ -28,13 +28,9 @@ fun PaymentIntent.toApi(): PaymentIntentApi {
         createdInMilliseconds = created * 1000,
         status = status!!.toApi(),
         amount = amount.toDouble(),
-        captureMethod = when (captureMethod!!) {
-            "automatic" -> CaptureMethodApi.AUTOMATIC
+        captureMethod = when (captureMethod) {
             "manual" -> CaptureMethodApi.MANUAL
-            else ->
-                throw IllegalArgumentException(
-                    "Not supported CaptureMethod '$captureMethod' on PaymentIntent $id"
-                )
+            else -> CaptureMethodApi.AUTOMATIC
         },
         currency = currency!!,
         metadata = metadata?.toHashMap() ?: hashMapOf(),

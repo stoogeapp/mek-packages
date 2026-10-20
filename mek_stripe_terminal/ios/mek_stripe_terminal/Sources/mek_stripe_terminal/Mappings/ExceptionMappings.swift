@@ -13,7 +13,7 @@ func createApiException(_ code: TerminalExceptionCodeApi, _ message: String? = n
 
 extension TerminalExceptionApi {
     func toPlatformError() -> PigeonError {
-        return createPigeonError("mek_stripe_terminal", nil, toList())
+        return PigeonError(code: "mek_stripe_terminal", message: nil, details: toList())
     }
 }
 
@@ -318,8 +318,22 @@ extension NSError {
             return .collectInputsApplicationError
         case .tapToPayInternalNetworkError:
             return .internalNetworkError
+        case .confirmInvalidSetupIntent:
+            return .confirmInvalidSetupIntent
+        case .readerConnectedToAnotherDevice:
+            return .readerConnectedToAnotherDevice
+        case .readerTampered:
+            return .readerTampered
+        case .surchargeConsentRequiresAmountSurcharge, .surchargeConsentNoticeRequiresAmountSurchargeAndCollectConsent,
+             .surchargeConsentRequestedForUnsupportedReader, .surchargeConsentDeclined, .surchargeConsentTimeout,
+             .surchargeNoticeNotAvailable, .amountSurchargeRequiresUpdatePaymentIntent, .offlineEncryptionKeysUnavailable,
+             .tapToPayReaderOfflineModeNotAllowed, .tapToPayReaderOfflineModeSessionExpired, .tapToPayReaderRequestInterrupted,
+             .amountSurchargeNotSupportedOffline, .cardNotSupported, .displaySurchargeConsentApplicationError, .printerLowBattery,
+             .simulatedOfflineModeNotAvailableForAccount, .simulatedOfflineModeNotAvailableInLivemode,
+             .tapToPayReaderOfflineModeSessionInvalidated, .tapToPayReaderOfflineModeTokenIssuerChanged, .unexpectedOperationError:
+            return nil
         @unknown default:
-            fatalError()
+            return nil
         }
     }
 }

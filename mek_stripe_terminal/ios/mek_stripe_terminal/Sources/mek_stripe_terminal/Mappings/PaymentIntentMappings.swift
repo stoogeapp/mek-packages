@@ -55,8 +55,10 @@ extension PaymentIntentStatus {
             return .succeeded
         case .requiresAction:
             return .requiresAction
+        case .requiresReauthorization:
+            return .requiresReauthorization
         @unknown default:
-            fatalError("Not supported payment intent status: \(self)")
+            return .requiresPaymentMethod
         }
     }
 }
