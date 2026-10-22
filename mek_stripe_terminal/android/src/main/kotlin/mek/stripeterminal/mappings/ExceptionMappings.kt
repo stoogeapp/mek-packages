@@ -59,6 +59,7 @@ private fun TerminalErrorCode.toApiCode(): TerminalExceptionCodeApi? {
         TerminalErrorCode.TAP_TO_PAY_DEBUG_NOT_SUPPORTED -> TerminalExceptionCodeApi.TAP_TO_PAY_DEBUG_NOT_SUPPORTED
         TerminalErrorCode.OFFLINE_MODE_UNSUPPORTED_ANDROID_VERSION -> TerminalExceptionCodeApi.OFFLINE_MODE_UNSUPPORTED_OPERATING_SYSTEM_VERSION
         TerminalErrorCode.CANCELED -> TerminalExceptionCodeApi.CANCELED
+        TerminalErrorCode.CANCELED_BY_READER -> TerminalExceptionCodeApi.CANCELED
         TerminalErrorCode.LOCATION_SERVICES_DISABLED -> TerminalExceptionCodeApi.LOCATION_SERVICES_DISABLED
         TerminalErrorCode.BLUETOOTH_SCAN_TIMED_OUT -> TerminalExceptionCodeApi.BLUETOOTH_SCAN_TIMED_OUT
         TerminalErrorCode.BLUETOOTH_LOW_ENERGY_UNSUPPORTED -> TerminalExceptionCodeApi.BLUETOOTH_LOW_ENERGY_UNSUPPORTED

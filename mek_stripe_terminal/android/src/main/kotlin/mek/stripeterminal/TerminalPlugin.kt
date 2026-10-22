@@ -22,7 +22,9 @@ import com.stripe.stripeterminal.external.models.Location
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.Refund
-import com.stripe.stripeterminal.external.models.RefundParameters
+import com.stripe.stripeterminal.external.models.LocaleConfig
+import com.stripe.stripeterminal.external.models.ProcessRefundParameters
+import com.stripe.stripeterminal.external.models.TestReaderUpdate
 import com.stripe.stripeterminal.external.models.SetupIntent
 import com.stripe.stripeterminal.external.models.SetupIntentCancellationParameters
 import com.stripe.stripeterminal.external.models.SetupIntentParameters
@@ -59,6 +61,7 @@ import mek.stripeterminal.mappings.createError
 import mek.stripeterminal.mappings.mapExceptionToApi
 import mek.stripeterminal.mappings.toApi
 import mek.stripeterminal.mappings.toHost
+import mek.stripeterminal.mappings.toTestReaderUpdate
 import mek.stripeterminal.plugin.DiscoverReadersStreamController
 import mek.stripeterminal.plugin.ReaderDelegatePlugin
 import mek.stripeterminal.plugin.TerminalDelegatePlugin
@@ -127,7 +130,8 @@ class TerminalPlatformPlugin(
             if (shouldPrintLogs) LogLevel.VERBOSE else LogLevel.NONE,
             delegate,
             delegate,
-            null
+            null,
+            LocaleConfig.CardLanguagePreferenceIfAvailable
         )
     }
 
@@ -148,6 +152,7 @@ class TerminalPlatformPlugin(
         get() = discoverReadersStreamController.readers
 
     private val readerDelegate: ReaderDelegatePlugin = ReaderDelegatePlugin(handlers)
+    private var simulatedReaderUpdate: TestReaderUpdate? = null
 
     override fun getConnectionStatus(): ConnectionStatusApi = terminal.connectionStatus.toApi()
 
@@ -179,7 +184,7 @@ class TerminalPlatformPlugin(
 
         terminal.connectReader(
             reader,
-            configuration.toHost(readerDelegate),
+            configuration.toHost(readerDelegate, simulatedReaderUpdate),
             object : TerminalErrorHandler<ReaderApi>(callback), ReaderCallback {
                 override fun onSuccess(reader: Reader) = callback(Result.success(reader.toApi()))
             }
@@ -278,6 +283,7 @@ class TerminalPlatformPlugin(
 
     override fun setSimulatorConfiguration(configuration: SimulatorConfigurationApi) {
         terminal.simulatorConfiguration = configuration.toHost()
+        simulatedReaderUpdate = configuration.update.toTestReaderUpdate()
     }
 
 
@@ -480,12 +486,11 @@ class TerminalPlatformPlugin(
             CustomerCancellation.DISABLE_IF_AVAILABLE
         }
         val config =
-            CollectSetupIntentConfiguration.Builder()
+            CollectSetupIntentConfiguration.Builder(allowRedisplay.toHost())
                 .setCustomerCancellation(customerCancellation)
 
         processSetupIntentCancelables[operationId] = terminal.processSetupIntent(
             setupIntent,
-            allowRedisplay.toHost(),
             config.build(),
             object : TerminalErrorHandler<SetupIntentApi>(callback), SetupIntentCallback {
                 override fun onFailure(e: TerminalException) {
@@ -641,28 +646,28 @@ class TerminalPlatformPlugin(
         metadata: HashMap<String, String>?,
         reverseTransfer: Boolean?,
         refundApplicationFee: Boolean?
-    ): RefundParameters {
-        val params = when {
+    ): ProcessRefundParameters {
+        val params: ProcessRefundParameters.Builder = when {
             paymentIntentId != null -> {
                 val clientSecret = paymentIntentClientSecret
                     ?: throw IllegalArgumentException("paymentIntentClientSecret is required when paymentIntentId is provided")
-                RefundParameters.ByPaymentIntentId(
+                ProcessRefundParameters.ByPaymentIntentId(
                     id = paymentIntentId,
                     clientSecret = clientSecret,
                     amount = amount,
                     currency = currency
                 )
             }
-            chargeId != null -> RefundParameters.ByChargeId(
+            chargeId != null -> ProcessRefundParameters.ByChargeId(
                 id = chargeId,
                 amount = amount,
                 currency = currency
             )
             else -> throw IllegalArgumentException("Either chargeId or paymentIntentId must be provided")
         }
-        metadata?.let(params::setMetadata)
-        reverseTransfer?.let(params::setReverseTransfer)
-        refundApplicationFee?.let(params::setRefundApplicationFee)
+        metadata?.let { params.metadata = it }
+        reverseTransfer?.let { params.reverseTransfer = it }
+        refundApplicationFee?.let { params.refundApplicationFee = it }
         return params.build()
     }
 

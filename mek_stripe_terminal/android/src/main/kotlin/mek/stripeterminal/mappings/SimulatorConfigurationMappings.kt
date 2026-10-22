@@ -1,9 +1,10 @@
 package mek.stripeterminal.mappings
 
-import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
+import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.external.models.SimulatedCard
 import com.stripe.stripeterminal.external.models.SimulatedCardType
 import com.stripe.stripeterminal.external.models.SimulatorConfiguration
+import com.stripe.stripeterminal.external.models.TestReaderUpdate
 import SimulateReaderUpdateApi
 import SimulatedCardApi
 import SimulatedCardTypeApi
@@ -11,18 +12,18 @@ import SimulatorConfigurationApi
 
 fun SimulatorConfigurationApi.toHost(): SimulatorConfiguration {
     return SimulatorConfiguration(
-        update = update.toHost(),
         simulatedCard = simulatedCard.toHost(),
         simulatedTipAmount = simulatedTipAmount
     )
 }
 
-fun SimulateReaderUpdateApi.toHost(): SimulateReaderUpdate {
+fun SimulateReaderUpdateApi.toTestReaderUpdate(): TestReaderUpdate? {
+    val components = setOf(ReaderSoftwareUpdate.UpdateComponent.FIRMWARE)
     return when (this) {
-        SimulateReaderUpdateApi.AVAILABLE -> SimulateReaderUpdate.UPDATE_AVAILABLE
-        SimulateReaderUpdateApi.NONE -> SimulateReaderUpdate.NONE
-        SimulateReaderUpdateApi.REQUIRED -> SimulateReaderUpdate.REQUIRED
-        SimulateReaderUpdateApi.RANDOM -> SimulateReaderUpdate.RANDOM
+        SimulateReaderUpdateApi.AVAILABLE -> TestReaderUpdate.available(components)
+        SimulateReaderUpdateApi.NONE -> null
+        SimulateReaderUpdateApi.REQUIRED -> TestReaderUpdate.required(components)
+        SimulateReaderUpdateApi.RANDOM -> TestReaderUpdate.random()
     }
 }
 

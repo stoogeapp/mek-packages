@@ -46,6 +46,7 @@ android {
 
     defaultConfig {
         minSdk = 24
+        consumerProguardFiles("consumer-rules.pro")
     }
 
     testOptions {
@@ -72,7 +73,7 @@ kotlin {
 }
 
 dependencies {
-    implementation("com.stripe:stripeterminal-core:5.8.2")
+    implementation("com.stripe:stripeterminal-core:6.0.0")
 
     implementation("com.google.android.material:material:1.14.0")
 

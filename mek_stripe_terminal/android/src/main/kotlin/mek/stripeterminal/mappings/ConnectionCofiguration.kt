@@ -1,6 +1,8 @@
 package mek.stripeterminal.mappings
 
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration
+import com.stripe.stripeterminal.external.models.TapUseCase
+import com.stripe.stripeterminal.external.models.TestReaderUpdate
 import AppsOnDevicesConnectionConfigurationApi
 import BluetoothConnectionConfigurationApi
 import ConnectionConfigurationApi
@@ -9,12 +11,16 @@ import TapToPayConnectionConfigurationApi
 import UsbConnectionConfigurationApi
 import mek.stripeterminal.plugin.ReaderDelegatePlugin
 
-fun ConnectionConfigurationApi.toHost(readerDelegate: ReaderDelegatePlugin): ConnectionConfiguration {
+fun ConnectionConfigurationApi.toHost(
+    readerDelegate: ReaderDelegatePlugin,
+    testReaderUpdate: TestReaderUpdate? = null,
+): ConnectionConfiguration {
     return when(this) {
         is BluetoothConnectionConfigurationApi -> ConnectionConfiguration.BluetoothConnectionConfiguration(
             locationId = locationId,
             autoReconnectOnUnexpectedDisconnect = autoReconnectOnUnexpectedDisconnect,
-            bluetoothReaderListener = readerDelegate
+            bluetoothReaderListener = readerDelegate,
+            testReaderUpdate = testReaderUpdate,
         )
 //        is EmbeddedConnectionConfigurationApi -> ConnectionConfiguration.EmbeddedConnectionConfiguration(
 //            posConnectionType = ,
@@ -35,14 +41,15 @@ fun ConnectionConfigurationApi.toHost(readerDelegate: ReaderDelegatePlugin): Con
             internetReaderListener = readerDelegate,
         )
         is TapToPayConnectionConfigurationApi -> ConnectionConfiguration.TapToPayConnectionConfiguration(
-            locationId = locationId,
+            useCase = TapUseCase.Pay(locationId),
             autoReconnectOnUnexpectedDisconnect = autoReconnectOnUnexpectedDisconnect,
             tapToPayReaderListener = readerDelegate
         )
         is UsbConnectionConfigurationApi -> ConnectionConfiguration.UsbConnectionConfiguration(
             locationId = locationId,
             autoReconnectOnUnexpectedDisconnect = autoReconnectOnUnexpectedDisconnect,
-            usbReaderListener = readerDelegate
+            usbReaderListener = readerDelegate,
+            testReaderUpdate = testReaderUpdate,
         )
     }
 }
